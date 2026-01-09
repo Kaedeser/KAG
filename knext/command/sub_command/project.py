@@ -166,11 +166,18 @@ def create_project(
     llm_config_checker = LLMConfigChecker()
     vectorize_model_config_checker = VectorizeModelConfigChecker()
     llm_config = config.get("chat_llm", {})
-    vectorize_model_config = config.get("vectorizer", {})
+    vectorize_model_config = config.get("vectorizer", {}) or config.get(
+        "vectorize_model", {}
+    )
+    if "vectorizer" not in config and "vectorize_model" in config:
+        config["vectorizer"] = config.get("vectorize_model", {})
     try:
         llm_config_checker.check(json.dumps(llm_config))
         dim = vectorize_model_config_checker.check(json.dumps(vectorize_model_config))
-        config["vectorizer"]["vector_dimensions"] = dim
+        if "vectorizer" in config and isinstance(config["vectorizer"], dict):
+            config["vectorizer"]["vector_dimensions"] = dim
+        if "vectorize_model" in config and isinstance(config["vectorize_model"], dict):
+            config["vectorize_model"]["vector_dimensions"] = dim
     except Exception as e:
         click.secho(f"Error: {e}", fg="bright_red")
         sys.exit()
