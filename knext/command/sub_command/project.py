@@ -170,7 +170,7 @@ def create_project(
         "vectorize_model", {}
     )
     if "vectorizer" not in config and "vectorize_model" in config:
-        config["vectorizer"] = config.get("vectorize_model", {})
+        config[“vectorizer”] = config[“vectorize_model”]
     try:
         llm_config_checker.check(json.dumps(llm_config))
         dim = vectorize_model_config_checker.check(json.dumps(vectorize_model_config))
